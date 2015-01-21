@@ -3,6 +3,9 @@ siren-lusca
 
 Web application security middleware for koa. This middleware is modified based on [lusca](https://github.com/krakenjs/lusca).
 
+=====
+[![Build Status](https://travis-ci.org/TerenceZ/siren-lusca.png)](https://travis-ci.org/TerenceZ/siren-lusca)
+
 ## Usage
 
 ```js
