@@ -1,47 +1,46 @@
-/*global describe:false, it:false */
-'use strict';
+"use strict";
 
 
-var lusca = require('../index'),
-    request = require('supertest'),
-    assert = require('assert'),
-    mock = require('./mocks/app');
+var lusca = require("../index"),
+  request = require("supertest"),
+  mock = require("./mocks/app"),
+  should = require("should");
 
 
-describe('XFRAME', function () {
+describe("XFRAME", function () {
 
-    it('method', function () {
-        assert(typeof lusca.xframe === 'function');
+  it("method", function () {
+    lusca.xframe.should.be.a.Function;
+  });
+
+
+  it("header (deny)", function (done) {
+    var config = { xframe: "DENY" },
+      app = mock(config);
+
+    app.get("/", function *() {
+      this.status = 200;
     });
 
+    request(app.listen())
+      .get("/")
+      .expect("X-FRAME-OPTIONS", config.xframe)
+      .expect(200, done);
+  });
 
-    it('header (deny)', function (done) {
-        var config = { xframe: 'DENY' },
-            app = mock(config);
 
-        app.get('/', function (req, res) {
-            res.status(200).end();
-        });
+  it("header (sameorigin)", function (done) {
+    var config = { xframe: "SAMEORIGIN" },
+      app = mock(config);
 
-        request(app)
-            .get('/')
-            .expect('X-FRAME-OPTIONS', config.xframe)
-            .expect(200, done);
+    app.get("/", function *() {
+      this.status = 200;
     });
 
-
-    it('header (sameorigin)', function (done) {
-        var config = { xframe: 'SAMEORIGIN' },
-            app = mock(config);
-
-        app.get('/', function (req, res) {
-            res.status(200).end();
-        });
-
-        request(app)
-            .get('/')
-            .expect('X-FRAME-OPTIONS', config.xframe)
-            .expect(200, done);
-    });
+    request(app.listen())
+      .get("/")
+      .expect("X-FRAME-OPTIONS", config.xframe)
+      .expect(200, done);
+  });
 
 });

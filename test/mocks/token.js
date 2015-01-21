@@ -1,9 +1,9 @@
-'use strict';
+"use strict";
 
 
 var tokenModule = module.exports = {
 
-    value: 'tokenAllTheThings',
+    value: "tokenAllTheThings",
 
     create: function (req) {
         return tokenModule.value;

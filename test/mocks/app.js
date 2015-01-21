@@ -1,37 +1,29 @@
-'use strict';
+"use strict";
+
+var koa = require("koa"),
+	router = require("siren-router"),
+	session = require("koa-generic-session"),
+	bodyParser = require("koa-bodyparser"),
+	lusca = require("../..");
 
 
-var express = require('express'),
-	cookieParser = require('cookie-parser'),
-	cookieSession = require('cookie-session'),
-	session = require('express-session'),
-	bodyParser = require('body-parser'),
-	errorHandler = require('errorhandler'),
-	lusca = require('../..');
+module.exports = function (config, type) {
 
+	var app = koa();
+	app.env = "test";
 
-module.exports = function (config, sessionType) {
-	var app = express();
+	app.keys = ["abc"];
 
-	app.use(cookieParser());
-	if (sessionType === undefined || sessionType === 'session') {
-		app.use(session({
-			secret: 'abc',
-			resave: true,
-			saveUninitialized: true
-		}));
-	} else if (sessionType === "cookie") {
-		app.use(cookieSession({
-			secret: 'abc'
-		}));
+	if (type !== "none") {
+		app.use(session());
 	}
 
-	app.use(bodyParser.json());
-	app.use(bodyParser.urlencoded({
-		extended: false
-	}));
-	(config !== undefined) ? app.use(lusca(config)) : console.log('no lusca');
-	app.use(errorHandler());
+	app.use(bodyParser());
 
+	if (config !== undefined) {
+		app.use(lusca(config));
+	}
+
+	app.use(router(app));
 	return app;
 };

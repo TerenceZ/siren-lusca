@@ -1,31 +1,30 @@
-/*global describe:false, it:false */
-'use strict';
+"use strict";
 
 
-var lusca = require('../index'),
-    request = require('supertest'),
-    assert = require('assert'),
-    mock = require('./mocks/app');
+var lusca = require("../index"),
+  request = require("supertest"),
+  mock = require("./mocks/app"),
+  should = require("should");
 
 
-describe('P3P', function () {
+describe("P3P", function () {
 
-    it('method', function () {
-        assert(typeof lusca.p3p === 'function');
+    it("method", function () {
+        lusca.p3p.should.be.a.Function;
     });
 
 
-    it('header', function (done) {
-        var config = { p3p: 'MY_P3P_VALUE' },
+    it("header", function (done) {
+        var config = { p3p: "MY_P3P_VALUE" },
             app = mock(config);
 
-        app.get('/', function (req, res) {
-            res.status(200).end();
+        app.get("/", function *() {
+            this.status = 200;
         });
 
-        request(app)
-            .get('/')
-            .expect('P3P', config.p3p)
+        request(app.listen())
+            .get("/")
+            .expect("P3P", config.p3p)
             .expect(200, done);
     });
 

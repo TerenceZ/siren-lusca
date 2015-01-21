@@ -15,7 +15,9 @@
 │   See the License for the specific language governing permissions and       │
 │   limitations under the License.                                            │
 \*───────────────────────────────────────────────────────────────────────────*/
-'use strict';
+"use strict";
+
+var compose = require("koa-compose");
 
 
 /**
@@ -23,41 +25,28 @@
  * @param {Object} options The configuration object.
  */
 var lusca = module.exports = function (options) {
-    var headers = [];
 
+    var headers = [];
     if (options) {
         Object.keys(lusca).forEach(function (key) {
-            var config = options[key];
 
+            var config = options[key];
             if (config) {
                 headers.push(lusca[key](config));
             }
         });
     }
 
-    return function lusca(req, res, next) {
-        var chain = next;
-
-        headers.forEach(function (header) {
-            chain = (function (next) {
-                return function (err) {
-                    if (err) {
-                        next(err);
-                        return;
-                    }
-                    header(req, res, next);
-                };
-            }(chain));
-        });
-
-        chain();
-    };
+    return compose(headers);
 };
 
 
-lusca.csrf = require('./lib/csrf');
-lusca.csp = require('./lib/csp');
-lusca.hsts = require('./lib/hsts');
-lusca.p3p = require('./lib/p3p');
-lusca.xframe = require('./lib/xframes');
-lusca.xssProtection = require('./lib/xssprotection');
+lusca.csrf = require("./lib/csrf");
+lusca.csp = require("./lib/csp");
+lusca.hsts = require("./lib/hsts");
+lusca.p3p = require("./lib/p3p");
+lusca.xframe = require("./lib/xframes");
+lusca.xssProtection = require("./lib/xssprotection");
+lusca.nocache = require("./lib/nocache");
+lusca.nosniff = require("./lib/nosniff");
+lusca.ienoopen = require("./lib/ienoopen");
