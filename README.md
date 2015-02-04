@@ -51,9 +51,6 @@ __Please note that you must ensure the existence of `ctx.session`.__
 ## API
 Please refer to [lusca](https://github.com/krakenjs/lusca) or the comments in the source code.
 
-Notes:
-- `lusca.csrf` will attach a method `csrf` on `ctx` for all request methods except GET, HEAD and OPTIONS, so you can invoke `ctx.csrf()` to check if the request is forged.
-
 #### Tests
 ```bash
 $ npm test

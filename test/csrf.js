@@ -73,32 +73,6 @@ describe("CSRF", function () {
         });
     });
 
-    it("GETs haven't a `ctx.csrf` method (session type: {value})", function (ctx, done) {
-      var mockConfig = ctx.value === "cookie" ? {
-          csrf: {
-            secret: "csrfSecret"
-          }
-        } : {
-          csrf: true
-        },
-        app = mock(mockConfig);
-
-      app.get("/", function *() {
-
-        should.not.exist(this.csrf);
-        this.body = {
-          token: this.state._csrf
-        };
-      });
-
-      request(app.listen())
-        .get("/")
-        .end(function (err, res) {
-          should.exist(res.body.token);
-          done(err);
-        });
-    });
-
     it("POST (200 OK with token) (session type: {value})", function (ctx, done) {
       var mockConfig = ctx.value === "cookie" ? {
           csrf: {
@@ -110,48 +84,6 @@ describe("CSRF", function () {
         app = mock(mockConfig);
 
       app.all("/", function *() {
-        this.body = {
-          token: this.state._csrf
-        };
-      });
-
-      request(app.listen())
-        .get("/")
-        .expect(200, function (err, res) {
-
-          if (err) {
-            return done(err);
-          }
-
-          request(app.listen())
-            .post("/")
-            .set("Cookie", mapCookies(res.headers["set-cookie"]))
-            .send({
-              _csrf: res.body.token
-            })
-            .expect(200, done);
-        });
-    });
-
-    it("POST have a `ctx.csrf` method (session type: {value})", function (ctx, done) {
-      var mockConfig = ctx.value === "cookie" ? {
-          csrf: {
-            secret: "csrfSecret"
-          }
-        } : {
-          csrf: true
-        },
-        app = mock(mockConfig);
-
-      app.get("/", function *() {
-
-        this.body = {
-          token: this.state._csrf
-        };
-      }).post("/", function *() {
-
-        should.exist(this.csrf);
-        this.csrf.should.be.a.Function;
         this.body = {
           token: this.state._csrf
         };
@@ -357,102 +289,6 @@ describe("CSRF", function () {
             })
             .expect(200, done);
         });
-    });
-
-    describe("options.auto", function () {
-
-      it("Should auto check csrf in default (session type: {value})", function (ctx, done) {
-        var mockConfig = ctx.value === "cookie" ? {
-            csrf: {
-              secret: "csrfSecret"
-            }
-          } : {
-            csrf: true
-          },
-          app = mock(mockConfig);
-
-        app.post("/", function *() {
-          this.status = 204;
-        });
-
-        request(app.listen())
-          .post("/")
-          .expect(403, done);
-      });
-
-      it("Should respond 204 (session type: {value})", function (ctx, done) {
-
-        var mockConfig = ctx.value === "cookie" ? {
-            csrf: {
-              secret: "csrfSecret",
-              auto: false
-            }
-          } : {
-            csrf: {
-              auto: false
-            }
-          },
-          app = mock(mockConfig);
-
-        app.post("/", function *() {
-          this.status = 204;
-        });
-
-        request(app.listen())
-          .post("/")
-          .expect(204, done);
-      });
-    });
-
-    it("Should inject `csrf` in `ctx`", function (ctx, done) {
-
-      var mockConfig = ctx.value === "cookie" ? {
-          csrf: {
-            secret: "csrfSecret",
-            auto: false
-          }
-        } : {
-          csrf: {
-            auto: false
-          }
-        },
-        app = mock(mockConfig);
-
-      app.post("/", function *() {
-
-        should.exist(this.csrf);
-        this.status = 204;
-      });
-
-      request(app.listen())
-        .post("/")
-        .expect(204, done);
-    });
-
-    it("Should return true for `ctx.csrf`", function (ctx, done) {
-
-      var mockConfig = ctx.value === "cookie" ? {
-          csrf: {
-            secret: "csrfSecret",
-            auto: false
-          }
-        } : {
-          csrf: {
-            auto: false
-          }
-        },
-        app = mock(mockConfig);
-
-      app.post("/", function *() {
-
-        should.exist(this.csrf);
-        this.csrf().should.be.true;
-        this.status = 204;
-      });
-
-      request(app.listen())
-        .post("/")
-        .expect(204, done);
     });
   });
 });
