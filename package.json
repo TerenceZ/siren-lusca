@@ -1,6 +1,6 @@
 {
   "name": "siren-lusca",
-  "version": "1.0.2",
+  "version": "1.0.3",
   "description": "Application security for koa.",
   "main": "index.js",
   "scripts": {
